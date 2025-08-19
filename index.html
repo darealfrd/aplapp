@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APL Fleet Management</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100">
+  <!-- Header -->
+  <div class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex items-center justify-between h-16">
+        <h1 class="text-xl font-bold text-gray-900">APL Fleet Management System</h1>
+        <div class="text-sm text-gray-600" id="current-date">Accra, Ghana • Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="max-w-7xl mx-auto px-4 py-4">
+    <nav class="flex space-x-4 flex-wrap">
+      <button data-tab="dashboard" class="tab-button flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors bg-white text-gray-700 hover:bg-gray-50">
+        <i data-lucide="trending-up" class="w-4 h-4"></i>
+        <span>Dashboard</span>
+      </button>
+      <button data-tab="bikes" class="tab-button flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors bg-white text-gray-700 hover:bg-gray-50">
+        <i data-lucide="bike" class="w-4 h-4"></i>
+        <span>Bike Management</span>
+      </button>
+      <button data-tab="riders" class="tab-button flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors bg-white text-gray-700 hover:bg-gray-50">
+        <i data-lucide="users" class="w-4 h-4"></i>
+        <span>Rider Management</span>
+      </button>
+      <button data-tab="revenue" class="tab-button flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors bg-white text-gray-700 hover:bg-gray-50">
+        <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+        <span>Revenue Tracking</span>
+      </button>
+      <button data-tab="salaries" class="tab-button flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors bg-white text-gray-700 hover:bg-gray-50">
+        <i data-lucide="clock" class="w-4 h-4"></i>
+        <span>Salary Management</span>
+      </button>
+      <button data-tab="investors" class="tab-button flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors bg-white text-gray-700 hover:bg-gray-50">
+        <i data-lucide="users" class="w-4 h-4"></i>
+        <span>Investor Reporting</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 pb-8">
+    <div id="dashboard-tab" class="tab-content space-y-6 hidden"></div>
+    <div id="bikes-tab" class="tab-content space-y-6 hidden"></div>
+    <div id="riders-tab" class="tab-content space-y-6 hidden"></div>
+    <div id="revenue-tab" class="tab-content space-y-6 hidden"></div>
+    <div id="salaries-tab" class="tab-content space-y-6 hidden"></div>
+    <div id="investors-tab" class="tab-content space-y-6 hidden"></div>
+  </div>
+
+  <!-- Onboard/Edit Rider Modal -->
+  <div id="rider-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-96 overflow-y-auto">
+      <h3 class="text-lg font-semibold mb-4" id="modal-title">Onboard New Rider</h3>
+      
+      <input type="hidden" id="modal-rider-id">
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Select Bike</label>
+          <select id="modal-bike-select" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            <option value="">Choose a bike</option>
+          </select>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">Full Name *</label>
+          <input id="modal-name" type="text" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">Email</label>
+          <input id="modal-email" type="email" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">Phone Number *</label>
+          <input id="modal-phone" type="tel" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">Address</label>
+          <input id="modal-address" type="text" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">ID Number</label>
+          <input id="modal-idnumber" type="text" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">Emergency Contact Name</label>
+          <input id="modal-emergencycontact" type="text" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">Emergency Phone</label>
+          <input id="modal-emergencyphone" type="tel" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">Status</label>
+          <select id="modal-status" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="flex space-x-3 mt-6">
+        <button id="rider-submit" class="flex-1 bg-green-500 text-white py-2 rounded hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed">Save</button>
+        <button id="rider-cancel" class="flex-1 bg-gray-500 text-white py-2 rounded hover:bg-gray-600">Cancel</button>
+        <button id="rider-delete" class="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600 hidden">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Bike Modal -->
+  <div id="bike-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-96 overflow-y-auto">
+      <h3 class="text-lg font-semibold mb-4">Edit Bike</h3>
+      
+      <input type="hidden" id="modal-bike-id">
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Bike ID</label>
+          <input id="modal-bike-id-display" type="text" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" readonly />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">Type</label>
+          <select id="modal-bike-type" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="investor">Investor</option>
+            <option value="personal">Personal</option>
+          </select>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">Rider</label>
+          <input id="modal-bike-rider" type="text" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">Status</label>
+          <select id="modal-bike-status" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="pending">Pending</option>
+            <option value="active">Active</option>
+            <option value="maintenance">Maintenance</option>
+          </select>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">Service</label>
+          <select id="modal-bike-service" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" multiple>
+            <option value="APL Subscription">APL Subscription</option>
+            <option value="Restaurant Contracts">Restaurant Contracts</option>
+            <option value="Yango/Bolt Active">Yango/Bolt Active</option>
+            <option value="Business Partnerships">Business Partnerships</option>
+          </select>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">Today's Earnings</label>
+          <input id="modal-bike-earnings" type="number" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+      </div>
+      
+      <div class="flex space-x-3 mt-6">
+        <button id="bike-submit" class="flex-1 bg-green-500 text-white py-2 rounded hover:bg-green-600">Save</button>
+        <button id="bike-cancel" class="flex-1 bg-gray-500 text-white py-2 rounded hover:bg-gray-600">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Button at Bottom Right -->
+  <div class="fixed bottom-4 right-4">
+    <button id="reset-data" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Reset All Data</button>
+  </div>
+
+  <script>
+    // Initial Data
+    let bikes = JSON.parse(localStorage.getItem('aplBikes')) || [
+      { id: 'INV-001', type: 'investor', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+      { id: 'INV-002', type: 'investor', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+      { id: 'INV-003', type: 'investor', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+      { id: 'INV-004', type: 'investor', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+      { id: 'INV-005', type: 'investor', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+      { id: 'INV-006', type: 'investor', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+      { id: 'INV-007', type: 'investor', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+      { id: 'INV-008', type: 'investor', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+      { id: 'PER-001', type: 'personal', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+      { id: 'PER-002', type: 'personal', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 }
+    ];
+
+    let riders = JSON.parse(localStorage.getItem('aplRiders')) || [];
+    let monthlyData = JSON.parse(localStorage.getItem('aplMonthlyData')) || { month: 1, activeBikes: 4, totalRevenue: 0, investorShare: 0, managementShare: 0, monthlyProfit: 0 };
+    let transactionHistory = JSON.parse(localStorage.getItem('aplTransactionHistory')) || [];
+    let tempEarnings = {};
+
+    let editingBike = null;
+    let selectedBikeForRider = '';
+    let activeTab = 'dashboard';
+
+    const currentScenario = 'medium';
+    const monthlyRiderSalary = 1200;
+
+    // Initialize Date
+    const currentDate = new Date('2025-08-17T23:00:00Z');
+    document.getElementById('current-date').textContent = `Accra, Ghana • ${currentDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} ${currentDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}`;
+
+    function saveData() {
+      localStorage.setItem('aplBikes', JSON.stringify(bikes));
+      localStorage.setItem('aplRiders', JSON.stringify(riders));
+      localStorage.setItem('aplMonthlyData', JSON.stringify(monthlyData));
+      localStorage.setItem('aplTransactionHistory', JSON.stringify(transactionHistory));
+    }
+
+    function resetData() {
+      localStorage.clear();
+      bikes = [
+        { id: 'INV-001', type: 'investor', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+        { id: 'INV-002', type: 'investor', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+        { id: 'INV-003', type: 'investor', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+        { id: 'INV-004', type: 'investor', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+        { id: 'INV-005', type: 'investor', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+        { id: 'INV-006', type: 'investor', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+        { id: 'INV-007', type: 'investor', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+        { id: 'INV-008', type: 'investor', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+        { id: 'PER-001', type: 'personal', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 },
+        { id: 'PER-002', type: 'personal', rider: '', status: 'pending', dailyEarnings: 0, service: [], onboardDate: null, cumulativePayout: 0 }
+      ];
+      riders = [];
+      monthlyData = { month: 1, activeBikes: 4, totalRevenue: 0, investorShare: 0, managementShare: 0, monthlyProfit: 0 };
+      transactionHistory = [];
+      tempEarnings = {};
+      renderActiveTab();
+    }
+
+    function calculateDaysWorked(onboardDate) {
+      if (!onboardDate) return 0;
+      const start = new Date(onboardDate);
+      const now = new Date();
+      const diffTime = Math.abs(now - start);
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+
+    function calculatePayouts(scenario, activeBikes, month) {
+      const revenuePerBike = { worst: 2000, medium: 3400, best: 4400 };
+      const costsPerBike = 1600;
+      const netProfitPerBike = revenuePerBike[scenario] - costsPerBike;
+      const totalNetProfit = netProfitPerBike * activeBikes;
+      let investorPercentage = 70;
+      if (month >= 11 && month <= 20) investorPercentage = 50;
+      else if (month > 20) investorPercentage = 20;
+      const investorShare = totalNetProfit * (investorPercentage / 100);
+      const eurAmount = investorShare / 9;
+      return {
+        totalNetProfit,
+        investorShare,
+        investorPercentage,
+        eurAmount,
+        managementShare: totalNetProfit - investorShare
+      };
+    }
+
+    function getActiveBikeCount() {
+      return bikes.filter(b => b.status === 'active' && b.type === 'investor').length;
+    }
+
+    function updateBikeEarnings(bikeId, earnings) {
+      earnings = parseFloat(earnings) || 0;
+      const bike = bikes.find(b => b.id === bikeId);
+      if (bike) {
+        bike.dailyEarnings = earnings;
+        const rider = riders.find(r => r.bikeId === bikeId);
+        if (rider) {
+          const historyEntry = { bikeId, amount: earnings, date: new Date().toISOString(), rider: rider.name };
+          transactionHistory.push(historyEntry);
+        }
+      }
+      tempEarnings[bikeId] = '';
+      saveData();
+      renderActiveTab();
+    }
+
+    function saveRider() {
+      const riderId = document.getElementById('modal-rider-id').value || `RID-${Date.now()}`;
+      const name = document.getElementById('modal-name').value;
+      const bikeId = document.getElementById('modal-bike-select').value;
+      if (!name || !bikeId) {
+        alert('Please fill all required fields (Name and Bike selection).');
+        return;
+      }
+      const onboardDate = riders.find(r => r.id === riderId)?.onboardDate || new Date().toISOString().split('T')[0];
+      const riderData = {
+        id: riderId,
+        name: name,
+        email: document.getElementById('modal-email').value,
+        phone: document.getElementById('modal-phone').value,
+        address: document.getElementById('modal-address').value,
+        idNumber: document.getElementById('modal-idnumber').value,
+        emergencyContact: document.getElementById('modal-emergencycontact').value,
+        emergencyPhone: document.getElementById('modal-emergencyphone').value,
+        bikeId: bikeId,
+        onboardDate,
+        status: document.getElementById('modal-status').value,
+        totalEarnings: riders.find(r => r.id === riderId)?.totalEarnings || 0,
+        daysWorked: calculateDaysWorked(onboardDate)
+      };
+      if (riderId.startsWith('RID-')) {
+        riders.push(riderData);
+      } else {
+        riders = riders.map(r => r.id === riderId ? riderData : r);
+      }
+      bikes = bikes.map(bike => bike.id === bikeId ? { ...bike, rider: name, status: riderData.status, onboardDate: riderData.onboardDate } : bike);
+      resetModal();
+      document.getElementById('rider-modal').classList.add('hidden');
+      saveData();
+      renderActiveTab();
+    }
+
+    function deleteRider(riderId) {
+      riders = riders.filter(r => r.id !== riderId);
+      const bikeId = riders.find(r => r.id === riderId)?.bikeId;
+      if (bikeId) {
+        bikes = bikes.map(b => b.id === bikeId ? { ...b, rider: '', status: 'pending', onboardDate: null } : b);
+      }
+      resetModal();
+      document.getElementById('rider-modal').classList.add('hidden');
+      saveData();
+      renderActiveTab();
+    }
+
+    function resetModal() {
+      document.getElementById('modal-rider-id').value = '';
+      document.getElementById('modal-title').textContent = 'Onboard New Rider';
+      document.getElementById('modal-bike-select').value = '';
+      document.getElementById('modal-name').value = '';
+      document.getElementById('modal-email').value = '';
+      document.getElementById('modal-phone').value = '';
+      document.getElementById('modal-address').value = '';
+      document.getElementById('modal-idnumber').value = '';
+      document.getElementById('modal-emergencycontact').value = '';
+      document.getElementById('modal-emergencyphone').value = '';
+      document.getElementById('modal-status').value = 'active';
+      document.getElementById('rider-delete').classList.add('hidden');
+      selectedBikeForRider = '';
+    }
+
+    function showRiderModal(riderId = '', bikeId = '') {
+      selectedBikeForRider = bikeId;
+      const select = document.getElementById('modal-bike-select');
+      select.innerHTML = '<option value="">Choose a bike</option>';
+      bikes.filter(b => b.status === 'pending' || b.id === bikeId).forEach(bike => {
+        const option = document.createElement('option');
+        option.value = bike.id;
+        option.textContent = `${bike.id} (${bike.type})`;
+        select.appendChild(option);
+      });
+      if (riderId) {
+        const rider = riders.find(r => r.id === riderId);
+        document.getElementById('modal-rider-id').value = riderId;
+        document.getElementById('modal-title').textContent = 'Edit Rider';
+        document.getElementById('modal-bike-select').value = rider.bikeId;
+        document.getElementById('modal-name').value = rider.name;
+        document.getElementById('modal-email').value = rider.email || '';
+        document.getElementById('modal-phone').value = rider.phone;
+        document.getElementById('modal-address').value = rider.address || '';
+        document.getElementById('modal-idnumber').value = rider.idNumber || '';
+        document.getElementById('modal-emergencycontact').value = rider.emergencyContact || '';
+        document.getElementById('modal-emergencyphone').value = rider.emergencyPhone || '';
+        document.getElementById('modal-status').value = rider.status;
+        document.getElementById('rider-delete').classList.remove('hidden');
+      } else if (bikeId) {
+        document.getElementById('modal-bike-select').value = bikeId;
+      }
+      document.getElementById('rider-modal').classList.remove('hidden');
+    }
+
+    function saveBike() {
+      const bikeId = document.getElementById('modal-bike-id').value;
+      const select = document.getElementById('modal-bike-service');
+      const selectedOptions = Array.from(select.selectedOptions).map(option => option.value);
+      const updatedBike = {
+        id: bikeId,
+        type: document.getElementById('modal-bike-type').value,
+        rider: document.getElementById('modal-bike-rider').value,
+        status: document.getElementById('modal-bike-status').value,
+        service: selectedOptions,
+        dailyEarnings: parseFloat(document.getElementById('modal-bike-earnings').value) || 0,
+        onboardDate: bikes.find(b => b.id === bikeId)?.onboardDate || null,
+        cumulativePayout: bikes.find(b => b.id === bikeId)?.cumulativePayout || 0
+      };
+      bikes = bikes.map(b => b.id === bikeId ? updatedBike : b);
+      if (updatedBike.rider) {
+        const rider = riders.find(r => r.bikeId === bikeId);
+        if (rider) rider.status = updatedBike.status;
+      }
+      document.getElementById('bike-modal').classList.add('hidden');
+      saveData();
+      renderActiveTab();
+    }
+
+    function showBikeModal(bikeId) {
+      const bike = bikes.find(b => b.id === bikeId);
+      document.getElementById('modal-bike-id').value = bikeId;
+      document.getElementById('modal-bike-id-display').value = bikeId;
+      document.getElementById('modal-bike-type').value = bike.type;
+      document.getElementById('modal-bike-rider').value = bike.rider || '';
+      document.getElementById('modal-bike-status').value = bike.status;
+      const select = document.getElementById('modal-bike-service');
+      Array.from(select.options).forEach(option => {
+        option.selected = bike.service.includes(option.value);
+      });
+      document.getElementById('modal-bike-earnings').value = bike.dailyEarnings;
+      document.getElementById('bike-modal').classList.remove('hidden');
+    }
+
+    function renderDashboard() {
+      const container = document.getElementById('dashboard-tab');
+      const activeBikeCount = getActiveBikeCount();
+      const dailyRevenueInvestor = bikes.filter(b => b.type === 'investor').reduce((sum, b) => sum + b.dailyEarnings, 0);
+      const investorDailyShare = Math.round(dailyRevenueInvestor * 0.7);
+      const serviceCounts = {
+        'APL Subscription': bikes.filter(b => b.service.includes('APL Subscription')).length,
+        'Restaurant Contracts': bikes.filter(b => b.service.includes('Restaurant Contracts')).length,
+        'Yango/Bolt Active': bikes.filter(b => b.service.includes('Yango/Bolt Active')).length,
+        'Business Partnerships': bikes.filter(b => b.service.includes('Business Partnerships')).length
+      };
+      container.innerHTML = `
+        <!-- Key Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="bg-blue-50 p-4 rounded-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-blue-600">Active Investor Bikes</p>
+                <p class="text-2xl font-bold text-blue-800">${activeBikeCount}/8</p>
+              </div>
+              <i data-lucide="bike" class="w-8 h-8 text-blue-500"></i>
+            </div>
+          </div>
+          <div class="bg-green-50 p-4 rounded-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-green-600">Daily Revenue</p>
+                <p class="text-2xl font-bold text-green-800">₵${dailyRevenueInvestor.toLocaleString()}</p>
+                <p class="text-xs text-green-500">Investor bikes only</p>
+              </div>
+              <i data-lucide="dollar-sign" class="w-8 h-8 text-green-500"></i>
+            </div>
+          </div>
+          <div class="bg-purple-50 p-4 rounded-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-purple-600">Investor Daily Share</p>
+                <p class="text-2xl font-bold text-purple-800">₵${investorDailyShare.toLocaleString()}</p>
+                <p class="text-xs text-purple-500">70% of investor revenue</p>
+              </div>
+              <i data-lucide="trending-up" class="w-8 h-8 text-purple-500"></i>
+            </div>
+          </div>
+          <div class="bg-orange-50 p-4 rounded-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-orange-600">Current Month</p>
+                <p class="text-2xl font-bold text-orange-800">${monthlyData.month}</p>
+                <p class="text-xs text-orange-500">Phase ${monthlyData.month <= 10 ? '1' : monthlyData.month <= 20 ? '2' : '3'}</p>
+              </div>
+              <i data-lucide="calendar" class="w-8 h-8 text-orange-500"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fleet Status -->
+        <div class="bg-white rounded-lg p-6 shadow">
+          <h3 class="text-lg font-semibold mb-4">Fleet Overview</h3>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            ${bikes.map(bike => `
+              <div class="p-3 rounded-lg border-2 ${bike.status === 'active' ? 'border-green-200 bg-green-50' : bike.status === 'maintenance' ? 'border-yellow-200 bg-yellow-50' : 'border-gray-200 bg-gray-50'}">
+                <div class="text-center">
+                  <i data-lucide="bike" class="w-6 h-6 mx-auto mb-2 ${bike.status === 'active' ? 'text-green-500' : bike.status === 'maintenance' ? 'text-yellow-500' : 'text-gray-400'}"></i>
+                  <p class="text-xs font-medium">${bike.id}</p>
+                  <p class="text-xs text-gray-600">${bike.rider || 'Unassigned'}</p>
+                  <p class="text-xs text-green-600">₵${bike.dailyEarnings}</p>
+                  ${bike.type === 'personal' ? '<span class="text-xs bg-blue-100 text-blue-800 px-1 rounded">Personal</span>' : ''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Revenue Streams -->
+        <div class="bg-white rounded-lg p-6 shadow">
+          <h3 class="text-lg font-semibold mb-4">Revenue Streams Status</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="p-4 border rounded-lg">
+              <h4 class="font-medium text-sm">APL Subscription</h4>
+              <p class="text-2xl font-bold text-green-600">${serviceCounts['APL Subscription']}</p>
+              <p class="text-xs text-gray-500">₵2,800/month each</p>
+            </div>
+            <div class="p-4 border rounded-lg">
+              <h4 class="font-medium text-sm">Restaurant Contracts</h4>
+              <p class="text-2xl font-bold text-blue-600">${serviceCounts['Restaurant Contracts']}</p>
+              <p class="text-xs text-gray-500">₵65/day average</p>
+            </div>
+            <div class="p-4 border rounded-lg">
+              <h4 class="font-medium text-sm">Yango/Bolt Active</h4>
+              <p class="text-2xl font-bold text-purple-600">${serviceCounts['Yango/Bolt Active']}</p>
+              <p class="text-xs text-gray-500">₵50/day average</p>
+            </div>
+            <div class="p-4 border rounded-lg">
+              <h4 class="font-medium text-sm">Business Partnerships</h4>
+              <p class="text-2xl font-bold text-orange-600">${serviceCounts['Business Partnerships']}</p>
+              <p class="text-xs text-gray-500">₵2,000/month target</p>
+            </div>
+          </div>
+        </div>
+      `;
+      lucide.createIcons({ container });
+    }
+
+    function renderBikeManagement() {
+      const container = document.getElementById('bikes-tab');
+      container.innerHTML = `
+        <div class="bg-white rounded-lg p-6 shadow">
+          <h3 class="text-lg font-semibold mb-4">Bike Management</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b">
+                  <th class="text-left p-3">Bike ID</th>
+                  <th class="text-left p-3">Type</th>
+                  <th class="text-left p-3">Rider</th>
+                  <th class="text-left p-3">Status</th>
+                  <th class="text-left p-3">Service</th>
+                  <th class="text-left p-3">Today's Earnings</th>
+                  <th class="text-left p-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${bikes.map(bike => `
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="p-3 font-medium">${bike.id}</td>
+                    <td class="p-3">
+                      <span class="px-2 py-1 rounded text-xs ${bike.type === 'investor' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}">
+                        ${bike.type}
+                      </span>
+                    </td>
+                    <td class="p-3">${bike.rider || 'Unassigned'}</td>
+                    <td class="p-3">
+                      <span class="px-2 py-1 rounded text-xs ${bike.status === 'active' ? 'bg-green-100 text-green-800' : bike.status === 'maintenance' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}">
+                        ${bike.status}
+                      </span>
+                    </td>
+                    <td class="p-3">${bike.service.join(', ') || 'None'}</td>
+                    <td class="p-3">₵${bike.dailyEarnings}</td>
+                    <td class="p-3">
+                      <button data-edit-bike="${bike.id}" class="text-blue-600 hover:underline text-xs mr-2">Edit</button>
+                      ${bike.status === 'pending' ? `<button data-assign-rider="${bike.id}" class="text-green-600 hover:underline text-xs">Assign Rider</button>` : ''}
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      container.querySelectorAll('[data-assign-rider]').forEach(btn => {
+        btn.addEventListener('click', () => showRiderModal('', btn.dataset.assignRider));
+      });
+      container.querySelectorAll('[data-edit-bike]').forEach(btn => {
+        btn.addEventListener('click', () => showBikeModal(btn.dataset.editBike));
+      });
+    }
+
+    function renderRiderManagement() {
+      const container = document.getElementById('riders-tab');
+      container.innerHTML = `
+        <div class="bg-white rounded-lg p-6 shadow">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold">Rider Management</h3>
+            <button id="onboard-new-rider" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+              Onboard New Rider
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b">
+                  <th class="text-left p-3">Rider Name</th>
+                  <th class="text-left p-3">Bike ID</th>
+                  <th class="text-left p-3">Phone</th>
+                  <th class="text-left p-3">Onboard Date</th>
+                  <th class="text-left p-3">Days Worked</th>
+                  <th class="text-left p-3">Status</th>
+                  <th class="text-left p-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${riders.length === 0 ? `
+                  <tr>
+                    <td colspan="7" class="p-8 text-center text-gray-500">
+                      No riders onboarded yet. Click "Onboard New Rider" to get started.
+                    </td>
+                  </tr>
+                ` : riders.map(rider => `
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="p-3 font-medium">${rider.name}</td>
+                    <td class="p-3">${rider.bikeId}</td>
+                    <td class="p-3">${rider.phone}</td>
+                    <td class="p-3">${rider.onboardDate}</td>
+                    <td class="p-3">${rider.daysWorked} days</td>
+                    <td class="p-3">
+                      <span class="px-2 py-1 rounded text-xs ${rider.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                        ${rider.status}
+                      </span>
+                    </td>
+                    <td class="p-3">
+                      <button data-edit-rider="${rider.id}" class="text-blue-600 hover:underline text-xs mr-2">Edit</button>
+                      <button data-delete-rider="${rider.id}" class="text-red-600 hover:underline text-xs">Delete</button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      document.getElementById('onboard-new-rider').addEventListener('click', () => showRiderModal());
+      container.querySelectorAll('[data-edit-rider]').forEach(btn => {
+        btn.addEventListener('click', () => showRiderModal(btn.dataset.editRider));
+      });
+      container.querySelectorAll('[data-delete-rider]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (confirm('Are you sure you want to delete this rider?')) {
+            deleteRider(btn.dataset.deleteRider);
+          }
+        });
+      });
+    }
+
+    function renderSalaryManagement() {
+      const container = document.getElementById('salaries-tab');
+      if (new Date().getDate() === 1) {
+        monthlyData.totalRevenue = 0;
+        monthlyData.monthlyProfit = 0;
+        saveData();
+      }
+      const activeRiders = riders.filter(r => r.status === 'active').length;
+      const totalMonthlySalaries = activeRiders * monthlyRiderSalary;
+      const totalDailyRevenue = bikes.reduce((sum, b) => sum + b.dailyEarnings, 0);
+      monthlyData.totalRevenue += totalDailyRevenue;
+      saveData();
+
+      container.innerHTML = `
+        <div class="bg-white rounded-lg p-6 shadow">
+          <h3 class="text-lg font-semibold mb-4">Salary Overview</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-blue-50 p-4 rounded-lg">
+              <h4 class="font-medium text-blue-800">Active Riders</h4>
+              <p class="text-2xl font-bold text-blue-600">${activeRiders}</p>
+              <p class="text-xs text-blue-500">Riders working</p>
+            </div>
+            <div class="bg-orange-50 p-4 rounded-lg">
+              <h4 class="font-medium text-orange-800">Total Monthly Salaries</h4>
+              <p class="text-2xl font-bold text-orange-600">₵${totalMonthlySalaries.toLocaleString()}</p>
+              <p class="text-xs text-orange-500">₵${monthlyRiderSalary}/rider/month</p>
+            </div>
+            <div class="p-4 rounded-lg ${monthlyData.monthlyProfit > 0 ? 'bg-green-50' : 'bg-red-50'}">
+              <h4 class="font-medium ${monthlyData.monthlyProfit > 0 ? 'text-green-800' : 'text-red-800'}">
+                Monthly Profit
+              </h4>
+              <p class="text-2xl font-bold ${monthlyData.monthlyProfit > 0 ? 'text-green-600' : 'text-red-600'}">
+                ₵${monthlyData.monthlyProfit.toLocaleString()}
+              </p>
+              <p class="text-xs ${monthlyData.monthlyProfit > 0 ? 'text-green-500' : 'text-red-500'}">
+                After salaries
+              </p>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b">
+                  <th class="text-left p-3">Rider Name</th>
+                  <th class="text-left p-3">Bike ID</th>
+                  <th class="text-left p-3">Monthly Salary</th>
+                  <th class="text-left p-3">Current Earnings</th>
+                  <th class="text-left p-3">Remaining for Salary</th>
+                  <th class="text-left p-3">Revenue vs Salaries</th>
+                  <th class="text-left p-3">Monthly Profit</th>
+                  <th class="text-left p-3">Performance</th>
+                  <th class="text-left p-3">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${riders.length === 0 ? `
+                  <tr>
+                    <td colspan="9" class="p-8 text-center text-gray-500">
+                      No active riders to track salaries for.
+                    </td>
+                  </tr>
+                ` : riders.map(rider => {
+                  const bike = bikes.find(b => b.id === rider.bikeId);
+                  const bikeEarnings = transactionHistory.filter(t => t.bikeId === rider.bikeId).reduce((sum, t) => sum + t.amount, 0);
+                  const currentEarnings = Math.min(bikeEarnings, monthlyRiderSalary);
+                  const remaining = Math.max(0, monthlyRiderSalary - currentEarnings);
+                  const monthlyProfit = bikeEarnings > monthlyRiderSalary ? bikeEarnings - monthlyRiderSalary : 0;
+                  const canAfford = currentEarnings >= monthlyRiderSalary;
+                  const performance = bikeEarnings >= 3400 ? 'Good' : bikeEarnings >= 2000 ? 'Average' : 'Below Target';
+                  const status = monthlyProfit > 0 ? 'Profitable' : 'Loss Making';
+                  if (bike) {
+                    bike.cumulativePayout += currentEarnings * 0.7; // 70% to investor
+                  }
+                  return `
+                    <tr class="border-b hover:bg-gray-50">
+                      <td class="p-3 font-medium">${rider.name}</td>
+                      <td class="p-3">${rider.bikeId}</td>
+                      <td class="p-3">₵${monthlyRiderSalary.toLocaleString()}</td>
+                      <td class="p-3">₵${currentEarnings.toLocaleString()}/month</td>
+                      <td class="p-3">₵${remaining.toLocaleString()}</td>
+                      <td class="p-3">
+                        <span class="px-2 py-1 rounded text-xs ${canAfford ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                          ${canAfford ? '✓ Covered' : '✗ Shortage'}
+                        </span>
+                      </td>
+                      <td class="p-3">₵${monthlyProfit.toLocaleString()}</td>
+                      <td class="p-3">
+                        <span class="px-2 py-1 rounded text-xs ${performance === 'Good' ? 'bg-green-100 text-green-800' : performance === 'Average' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}">
+                          ${performance}
+                        </span>
+                      </td>
+                      <td class="p-3">
+                        <span class="px-2 py-1 rounded text-xs ${status === 'Profitable' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                          ${status}
+                        </span>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderRevenueTracking() {
+      const container = document.getElementById('revenue-tab');
+      const activeBikeCount = getActiveBikeCount();
+      const totalDaily = bikes.reduce((sum, b) => sum + b.dailyEarnings, 0);
+      const projectedMonthly = totalDaily * 26;
+      const investorDaily = bikes.filter(b => b.type === 'investor').reduce((sum, b) => sum + b.dailyEarnings, 0);
+      const investorDailyShare = Math.round(investorDaily * 0.7);
+      container.innerHTML = `
+        <div class="bg-white rounded-lg p-6 shadow">
+          <h3 class="text-lg font-semibold mb-4">Daily Revenue Entry</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <h4 class="font-medium">Quick Entry</h4>
+              ${bikes.filter(b => b.status === 'active' || b.status === 'pending').map(bike => `
+                <div class="flex items-center space-x-3">
+                  <label class="w-20 text-sm font-medium">${bike.id}</label>
+                  <input type="number" data-earnings-input="${bike.id}" placeholder="₵ Today's earnings" class="flex-1 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" value="${tempEarnings[bike.id] || ''}" />
+                  <button data-save-earnings="${bike.id}" class="bg-blue-500 text-white px-3 py-2 rounded text-sm hover:bg-blue-600">Save</button>
+                </div>
+              `).join('')}
+            </div>
+            <div class="bg-gray-50 p-4 rounded">
+              <h4 class="font-medium mb-3">Today's Summary</h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span>Total Bikes Active:</span>
+                  <span class="font-medium">${bikes.filter(b => b.status === 'active').length}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Total Daily Revenue:</span>
+                  <span class="font-medium">₵${totalDaily.toLocaleString()}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Projected Monthly:</span>
+                  <span class="font-medium">₵${projectedMonthly.toLocaleString()}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Investor Daily Share:</span>
+                  <span class="font-medium">₵${investorDailyShare.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-6 shadow">
+          <h3 class="text-lg font-semibold mb-4">Monthly Projections</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-green-50 p-4 rounded-lg">
+              <h4 class="font-medium text-green-800">Total Revenue</h4>
+              <p class="text-2xl font-bold text-green-600">₵${monthlyData.totalRevenue.toLocaleString()}</p>
+              <p class="text-xs text-green-500">Cumulative to date</p>
+            </div>
+            <div class="bg-purple-50 p-4 rounded-lg">
+              <h4 class="font-medium text-purple-800">Investor Share</h4>
+              <p class="text-2xl font-bold text-purple-600">₵${monthlyData.investorShare.toLocaleString()}</p>
+              <p class="text-xs text-purple-500">${calculatePayouts(currentScenario, monthlyData.activeBikes, monthlyData.month).investorPercentage}%</p>
+            </div>
+            <div class="bg-blue-50 p-4 rounded-lg">
+              <h4 class="font-medium text-blue-800">Management Share</h4>
+              <p class="text-2xl font-bold text-blue-600">₵${monthlyData.managementShare.toLocaleString()}</p>
+              <p class="text-xs text-blue-500">Remaining profit</p>
+            </div>
+          </div>
+        </div>
+      `;
+      container.querySelectorAll('[data-save-earnings]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const bikeId = btn.dataset.saveEarnings;
+          const input = container.querySelector(`[data-earnings-input="${bikeId}"]`);
+          updateBikeEarnings(bikeId, input.value);
+          input.value = '';
+        });
+      });
+    }
+
+    function renderInvestorReporting() {
+      const container = document.getElementById('investors-tab');
+      const activeBikes = getActiveBikeCount();
+      const totalCumulativePayout = bikes.reduce((sum, b) => sum + b.cumulativePayout, 0);
+      const investorShare = monthlyData.monthlyProfit * 0.7;
+      container.innerHTML = `
+        <div class="bg-white rounded-lg p-6 shadow">
+          <h3 class="text-lg font-semibold mb-4">Investor Report</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div class="bg-green-50 p-4 rounded-lg">
+                <h4 class="font-medium text-green-800">Active Investor Bikes</h4>
+                <p class="text-2xl font-bold text-green-600">${activeBikes}</p>
+                <p class="text-xs text-green-500">Currently operational</p>
+              </div>
+              <div class="bg-purple-50 p-4 rounded-lg">
+                <h4 class="font-medium text-purple-800">Investor Share</h4>
+                <p class="text-2xl font-bold text-purple-600">₵${investorShare.toLocaleString()}</p>
+                <p class="text-xs text-purple-500">70% of monthly profit</p>
+              </div>
+              <div class="bg-blue-50 p-4 rounded-lg">
+                <h4 class="font-medium text-blue-800">EUR Equivalent</h4>
+                <p class="text-2xl font-bold text-blue-600">€${(investorShare / 9).toLocaleString()}</p>
+                <p class="text-xs text-blue-500">1 EUR = 9 GHS</p>
+              </div>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <h4 class="font-medium text-gray-800">Notes</h4>
+              <ul class="text-sm text-gray-600 space-y-2">
+                <li>Total Cumulative Payout: ₵${totalCumulativePayout.toLocaleString()}</li>
+                <li>Phase 1 (Months 1-10): 70% investor share</li>
+                <li>Phase 2 (Months 11-20): 50% investor share</li>
+                <li>Phase 3 (Months 21+): 20% investor share</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderActiveTab() {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+      document.getElementById(`${activeTab}-tab`).classList.remove('hidden');
+      const renderFunctions = {
+        dashboard: renderDashboard,
+        bikes: renderBikeManagement,
+        riders: renderRiderManagement,
+        revenue: renderRevenueTracking,
+        salaries: renderSalaryManagement,
+        investors: renderInvestorReporting
+      };
+      renderFunctions[activeTab]();
+    }
+
+    // Event Listeners
+    document.querySelectorAll('.tab-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeTab = btn.dataset.tab;
+        document.querySelectorAll('.tab-button').forEach(t => t.classList.remove('bg-gray-200'));
+        btn.classList.add('bg-gray-200');
+        renderActiveTab();
+      });
+    });
+
+    document.getElementById('reset-data').addEventListener('click', resetData);
+
+    document.getElementById('rider-submit').addEventListener('click', saveRider);
+    document.getElementById('rider-cancel').addEventListener('click', () => {
+      resetModal();
+      document.getElementById('rider-modal').classList.add('hidden');
+    });
+    document.getElementById('rider-delete').addEventListener('click', () => {
+      if (confirm('Are you sure you want to delete this rider?')) {
+        deleteRider(document.getElementById('modal-rider-id').value);
+      }
+    });
+
+    document.getElementById('bike-submit').addEventListener('click', saveBike);
+    document.getElementById('bike-cancel').addEventListener('click', () => {
+      document.getElementById('bike-modal').classList.add('hidden');
+    });
+
+    // Initialize
+    document.querySelector(`[data-tab="${activeTab}"]`).classList.add('bg-gray-200');
+    renderActiveTab();
+    lucide.createIcons();
+  </script>
+</body>
+</html>
