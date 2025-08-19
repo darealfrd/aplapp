@@ -6,6 +6,9 @@
   <title>APL Fleet Management</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- ✅ Add Supabase SDK here -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body class="bg-gray-100">
   <!-- Header -->
@@ -915,9 +918,38 @@
     });
 
     // Initialize
-    document.querySelector(`[data-tab="${activeTab}"]`).classList.add('bg-gray-200');
-    renderActiveTab();
-    lucide.createIcons();
-  </script>
+document.querySelector(`[data-tab="${activeTab}"]`).classList.add('bg-gray-200');
+renderActiveTab();
+lucide.createIcons();
+
+// ✅ Supabase connection
+const SUPABASE_URL = "https://YOUR_PROJECT_ID.supabase.co";
+const SUPABASE_ANON_KEY = "YOUR_PUBLIC_ANON_KEY";
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Example: insert a test row
+async function addMessage(content) {
+  let { data, error } = await supabase
+    .from("messages")
+    .insert([{ content }]);
+  if (error) console.error(error);
+  else console.log("Inserted:", data);
+}
+
+// Example: fetch all rows
+async function loadMessages() {
+  let { data, error } = await supabase
+    .from("messages")
+    .select("*")
+    .order("id", { ascending: false });
+  if (error) console.error(error);
+  else console.log("Loaded:", data);
+}
+
+// Run a quick test when page loads
+addMessage("Hello from deployed app!");
+loadMessages();
+</script>
 </body>
 </html>
